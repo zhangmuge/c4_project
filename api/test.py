@@ -142,7 +142,34 @@ def test():
     add_host('h1', '10.0.0.1')
 
 
+@route('/iperf/<node1>/<node2>')
+def iperf(node1, node2):
+    net.iperf((net.get(node1), net.get(node2)))
+
+
+@route('/simple_topo')
+def simple_topo():
+    s1 = net.addSwitch('s1', cls=OVSKernelSwitch)
+
+    h1 = net.addHost('h1', cls=Host, ip='10.0.0.1', defaultRoute=None)
+    h2 = net.addHost('h2', cls=Host, ip='10.0.0.2', defaultRoute=None)
+
+    info('*** Add links\n')
+    net.addLink(s1, h1)
+    net.addLink(s1, h2)
+
+    info('*** Starting network\n')
+    net.build()
+    info('*** Starting controllers\n')
+    for controller in net.controllers:
+        controller.start()
+
+    info('*** Starting switches\n')
+    net.get('s1').start([ryu])
+    net.pingAll()
+
+
 if __name__ == '__main__':
     os.system("sudo mn -c")
-
+    # os.system("ryu-manager ./simple_switch_13.py")
     run(host='localhost', port=2345)
