@@ -9,8 +9,8 @@ def pings(host1, host2):#host1 host2的类型为Host
     host2_line = host2_lines[0].split("inet")
     h2 = host2_line[1].split(" ")[1]
     #h2 = host2.cmd("ifconfig|grep 'inet'")[13:21]
-    cmd = os.popen("ping -c 5 -a "+ h1 + " " +  h2 + "| grep 'time='")
-    lines = cmd.read().split("\x07\n")
+    cmd = host1.cmd("ping -c 5 " + h2 + "|grep 'time='")
+    lines = cmd.split("\r\n")
     lines.remove('')
     sum = 0
     for line in lines:
